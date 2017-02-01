@@ -14,12 +14,12 @@ trap "rm -rf '$WORKER'" EXIT
 
 # create cloud-init data to update hostname and password
 if [ ! -e $IMG_DIR/$CLOUD_INIT ]; then
-    cat > meta-data << EOF
+    cat > $IMG_DIR/meta-data << EOF
 instance-id: $VM_NAME
 local-hostname: $VM_NAME
 EOF
 
-    cat > user-data << EOF
+    cat > $IMG_DIR/user-data << EOF
 #cloud-config
 password: root
 chpasswd: { expire: False }
@@ -35,7 +35,7 @@ EOF
 # [ -e $IMG_DIR/$ORG_IMG ] || yes | cp $CUR_DIR/$ORG_IMG $IMG_DIR
 
 # wrap all cloud-init data to an iso file
-    genisoimage  -output $IMG_DIR/$CLOUD_INIT -volid cidata -joliet -rock user-data meta-data
+    genisoimage  -output $IMG_DIR/$CLOUD_INIT -volid cidata -joliet -rock $IMG_DIR/user-data $IMG_DIR/meta-data
 fi
 
 # create a qcow2 VM image
