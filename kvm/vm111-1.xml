@@ -1,0 +1,68 @@
+<domain type="kvm">
+  <uuid>1bde84aa-e81a-11e6-9f84-000c291cc026</uuid>
+  <name>vm111-1</name>
+  <memory>1048576</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+    <boot dev="hd"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <cputune>
+    <shares>1024</shares>
+  </cputune>
+  <clock offset="utc"/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <cpu mode="host-model" match="exact">
+    <topology sockets="1" cores="1" threads="1"/>
+  </cpu>
+  <devices>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="qcow2" cache="none"/>
+      <source file="/var/lib/libvirt/images/vm111-1.img"/>
+      <target bus="virtio" dev="vda"/>
+    </disk>
+    <interface type="network">
+      <target dev='mgmt-port'/>
+      <model type="virtio"/>
+      <source network="br-mgmt"/>
+      <driver name="qemu"/>
+    </interface>
+    <interface type="bridge">
+      <virtualport type='openvswitch'>
+      </virtualport>
+      <target dev='vm1-eth0'/>
+      <model type="virtio"/>
+      <source bridge="br-int"/>
+      <driver name="qemu"/>
+    </interface>
+    <interface type="bridge">
+      <virtualport type='openvswitch'>
+      </virtualport>
+      <target dev='vm1-eth1'/>
+      <model type="virtio"/>
+      <source bridge="br-ex"/>
+      <driver name="qemu"/>
+    </interface>
+    <serial type="file">
+      <source path="/var/lib/libvirt/console.log"/>
+    </serial>
+    <console type="pty">
+      <target type="serial" port="0"/>
+    </console>
+    <serial type="pty"/>
+    <input type="tablet" bus="usb"/>
+    <graphics type="vnc" port="6000" autoport="no" keymap="en-us" listen="0.0.0.0"/>
+    <video>
+      <model type="cirrus"/>
+    </video>
+    <memballoon model="virtio">
+      <stats period="10"/>
+    </memballoon>
+  </devices>
+</domain>
