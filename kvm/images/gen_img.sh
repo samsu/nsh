@@ -1,4 +1,4 @@
-VM_NAME=vm111-1
+VM_NAME=vm111-2
 CLOUD_INIT=seed.iso
 IMG_URL=https://cloud-images.ubuntu.com/xenial/current/
 ORG_IMG=xenial-server-cloudimg-amd64-disk1.img

@@ -3,7 +3,7 @@
 set -o xtrace
 
 ## use a specific folder as the workfolder ($PWD)
-W_DIR=/root/kvm
+W_DIR=/root/nsh/kvm
 
 VM_PREFIX='vm111-'
 VM_SEQ=1

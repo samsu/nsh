@@ -1,11 +1,13 @@
-VM_NAME=vm111-1
+NUM=1
+VM_NAME=vm111-$NUM
 
 MAC1=$(printf '52:54:00:%02X:%02X:%02X\n' $[RANDOM%256] $[RANDOM%256] $[RANDOM%256])
 MAC2=$(printf '52:54:00:%02X:%02X:%02X\n' $[RANDOM%256] $[RANDOM%256] $[RANDOM%256])
 
-INF1=vm1-eth0
-INF2=vm1-eth1
-
+MNINF=vm$NUM-mgmt-port
+INF1=vm$NUM-eth1
+INF2=vm$NUM-eth2
+VNC_PORT=$((NUM * 2 + 6000 ))
 
 apt-get -y install uuid > /dev/null
 UUID=$(uuid)
@@ -41,7 +43,7 @@ cat > $VM_NAME.xml << EOF
       <target bus="virtio" dev="vda"/>
     </disk>
     <interface type="network">
-      <target dev='mgmt-port'/>
+      <target dev='$MNINF'/>
       <model type="virtio"/>
       <source network="br-mgmt"/>
       <driver name="qemu"/>
@@ -70,7 +72,7 @@ cat > $VM_NAME.xml << EOF
     </console>
     <serial type="pty"/>
     <input type="tablet" bus="usb"/>
-    <graphics type="vnc" port="6000" autoport="no" keymap="en-us" listen="0.0.0.0"/>
+    <graphics type="vnc" port="$VNC_PORT" autoport="no" keymap="en-us" listen="0.0.0.0"/>
     <video>
       <model type="cirrus"/>
     </video>

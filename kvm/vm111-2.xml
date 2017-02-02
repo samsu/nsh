@@ -1,6 +1,6 @@
 <domain type="kvm">
-  <uuid>07cd5bec-e8f8-11e6-9df8-000c291cc026</uuid>
-  <name>vm111-1</name>
+  <uuid>efc6d14a-e8f7-11e6-84a5-000c291cc026</uuid>
+  <name>vm111-2</name>
   <memory>1048576</memory>
   <vcpu>1</vcpu>
   <os>
@@ -24,11 +24,11 @@
   <devices>
     <disk type="file" device="disk">
       <driver name="qemu" type="qcow2" cache="none"/>
-      <source file="/var/lib/libvirt/images/vm111-1.img"/>
+      <source file="/var/lib/libvirt/images/vm111-2.img"/>
       <target bus="virtio" dev="vda"/>
     </disk>
     <interface type="network">
-      <target dev='vm1-mgmt-port'/>
+      <target dev='vm2-mgmt-port'/>
       <model type="virtio"/>
       <source network="br-mgmt"/>
       <driver name="qemu"/>
@@ -36,7 +36,7 @@
     <interface type="bridge">
       <virtualport type='openvswitch'>
       </virtualport>
-      <target dev='vm1-eth1'/>
+      <target dev='vm2-eth1'/>
       <model type="virtio"/>
       <source bridge="br-int"/>
       <driver name="qemu"/>
@@ -44,7 +44,7 @@
     <interface type="bridge">
       <virtualport type='openvswitch'>
       </virtualport>
-      <target dev='vm1-eth2'/>
+      <target dev='vm2-eth2'/>
       <model type="virtio"/>
       <source bridge="br-ex"/>
       <driver name="qemu"/>
@@ -57,7 +57,7 @@
     </console>
     <serial type="pty"/>
     <input type="tablet" bus="usb"/>
-    <graphics type="vnc" port="6002" autoport="no" keymap="en-us" listen="0.0.0.0"/>
+    <graphics type="vnc" port="6004" autoport="no" keymap="en-us" listen="0.0.0.0"/>
     <video>
       <model type="cirrus"/>
     </video>
