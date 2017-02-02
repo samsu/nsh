@@ -35,14 +35,17 @@ EOF
 # [ -e $IMG_DIR/$ORG_IMG ] || yes | cp $CUR_DIR/$ORG_IMG $IMG_DIR
 
 # wrap all cloud-init data to an iso file
+    apt-get install -y genisoimage > /dev/null
     genisoimage  -output $IMG_DIR/$CLOUD_INIT -volid cidata -joliet -rock $IMG_DIR/user-data $IMG_DIR/meta-data
 fi
 
 # create a qcow2 VM image
+apt-get install -y qemu-utils > /dev/null
 [ -e $IMG_DIR/$VM_IMG ] || qemu-img create -f qcow2 -b $IMG_DIR/$ORG_IMG $IMG_DIR/$VM_IMG
 
 # initial the VM image with the above cloud-init data.
 #kvm -curses -m 256 -net nic -net user,hostfwd=tcp::2222-:22 -drive file=$IMG_DIR/$VM_IMG,if=virtio -drive file=$IMG_DIR/$CLOUD_INIT,format=raw,if=virtio &
+apt-get install -y qemu-kvm > /dev/null
 kvm -curses -m 256 -drive file=$IMG_DIR/$VM_IMG,if=virtio -drive file=$IMG_DIR/$CLOUD_INIT,format=raw,if=virtio &
 jobs -p %% > $WORKER
 sleep 30s & exit
