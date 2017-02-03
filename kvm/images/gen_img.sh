@@ -1,13 +1,19 @@
 VM_NAME=vm111-2
-CLOUD_INIT=seed.iso
+CLOUD_INIT=$VM_NAME.iso
 IMG_URL=https://cloud-images.ubuntu.com/xenial/current/
-ORG_IMG=xenial-server-cloudimg-amd64-disk1.img
+ORG_IMG=xenial-server-cloudimg-amd64-disk2.img
 VM_IMG=$VM_NAME.img
 CUR_DIR=/root/nsh/kvm/images
 IMG_DIR=/var/lib/libvirt/images
 
 WORKER="$(mktemp)" || exit $?
 trap "rm -rf '$WORKER'" EXIT
+
+# install related packages
+for pkg in genisoimage qemu-utils qemu-kvm
+do
+   dpkg -l $pkg | egrep ^ii > /dev/null || apt-get install -y $pkg
+done
 
 # download image file
 [ -e $IMG_DIR/$ORG_IMG ] || wget $IMG_URL/$ORG_IMG -P $IMG_DIR
@@ -35,17 +41,14 @@ EOF
 # [ -e $IMG_DIR/$ORG_IMG ] || yes | cp $CUR_DIR/$ORG_IMG $IMG_DIR
 
 # wrap all cloud-init data to an iso file
-    apt-get install -y genisoimage > /dev/null
     genisoimage  -output $IMG_DIR/$CLOUD_INIT -volid cidata -joliet -rock $IMG_DIR/user-data $IMG_DIR/meta-data
 fi
 
 # create a qcow2 VM image
-apt-get install -y qemu-utils > /dev/null
 [ -e $IMG_DIR/$VM_IMG ] || qemu-img create -f qcow2 -b $IMG_DIR/$ORG_IMG $IMG_DIR/$VM_IMG
 
 # initial the VM image with the above cloud-init data.
 #kvm -curses -m 256 -net nic -net user,hostfwd=tcp::2222-:22 -drive file=$IMG_DIR/$VM_IMG,if=virtio -drive file=$IMG_DIR/$CLOUD_INIT,format=raw,if=virtio &
-apt-get install -y qemu-kvm > /dev/null
 kvm -curses -m 256 -drive file=$IMG_DIR/$VM_IMG,if=virtio -drive file=$IMG_DIR/$CLOUD_INIT,format=raw,if=virtio &
 jobs -p %% > $WORKER
 sleep 30s & exit

@@ -6,7 +6,7 @@ set -o xtrace
 W_DIR=/root/nsh/kvm
 
 VM_PREFIX='vm111-'
-VM_SEQ=1
+VM_SEQ=2
 IMG_DIR=$W_DIR/images
 VM_NAME=$VM_PREFIX$VM_SEQ
 IMG_FILE=$IMG_DIR/$VM_NAME
