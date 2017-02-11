@@ -1,0 +1,31 @@
+table=0, priority=1000,arp,arp_tpa=192.168.100.1,arp_op=1 actions=move:NXM_OF_ETH_SRC[]->NXM_OF_ETH_DST[],set_field:ee:8a:4e:0d:dd:11->eth_src,load:0x2->NXM_OF_ARP_OP[],move:NXM_NX_ARP_SHA[]->NXM_NX_ARP_THA[],load:0xee8a4e0ddd11->NXM_NX_ARP_SHA[],move:NXM_OF_ARP_SPA[]->NXM_OF_ARP_TPA[],load:0xc0a86401->NXM_OF_ARP_SPA[],IN_PORT
+table=0, priority=1001,encap_eth_type=0x894f actions=goto_table:1
+table=0, priority=1000,ip,dl_dst=ee:8a:4e:0d:dd:11,nw_dst=192.168.100.1 actions=output:1
+table=0, priority=1000,icmp,in_port=1,nw_src=192.168.100.1,nw_dst=192.168.100.21 actions=push_nsh,load:0x1->NXM_NX_NSH_MDTYPE[],load:0x3->NXM_NX_NSH_NP[],load:0x4->NXM_NX_NSP[0..23],load:0xff->NXM_NX_NSI[],load:0x1->NXM_NX_NSH_C1[],load:0x64->NXM_NX_NSH_C2[],load:0x3->NXM_NX_NSH_C3[],load:0x4->NXM_NX_NSH_C4[],goto_table:4
+table=0, priority=1000,tcp,in_port=1,nw_src=192.168.100.1,nw_dst=192.168.100.21,tp_dst=80 actions=push_nsh,load:0x1->NXM_NX_NSH_MDTYPE[],load:0x3->NXM_NX_NSH_NP[],load:0x4->NXM_NX_NSP[0..23],load:0xff->NXM_NX_NSI[],load:0x1->NXM_NX_NSH_C1[],load:0x65->NXM_NX_NSH_C2[],load:0x3->NXM_NX_NSH_C3[],load:0x4->NXM_NX_NSH_C4[],goto_table:4
+table=0, priority=5 actions=goto_table:1
+
+table=0, priority=1000,arp,arp_tpa=192.168.100.21,arp_op=1 actions=move:NXM_OF_ETH_SRC[]->NXM_OF_ETH_DST[],set_field:f6:91:d2:b9:af:53->eth_src,load:0x2->NXM_OF_ARP_OP[],move:NXM_NX_ARP_SHA[]->NXM_NX_ARP_THA[],load:0xf691d2b9af53->NXM_NX_ARP_SHA[],move:NXM_OF_ARP_SPA[]->NXM_OF_ARP_TPA[],load:0xc0a86415->NXM_OF_ARP_SPA[],IN_PORT
+table=0, priority=1000,ip,dl_dst=f6:91:d2:b9:af:53,nw_dst=192.168.100.21 actions=output:5
+table=0, priority=1000,icmp,in_port=5,nw_src=192.168.100.21,nw_dst=192.168.100.1 actions=push_nsh,load:0x1->NXM_NX_NSH_MDTYPE[],load:0x3->NXM_NX_NSH_NP[],load:0x800004->NXM_NX_NSP[0..23],load:0xff->NXM_NX_NSI[],load:0x1->NXM_NX_NSH_C1[],load:0x66->NXM_NX_NSH_C2[],load:0x3->NXM_NX_NSH_C3[],load:0x4->NXM_NX_NSH_C4[],goto_table:4
+table=0, priority=1000,tcp,in_port=5,nw_src=192.168.100.21,nw_dst=192.168.100.1,tp_src=80 actions=push_nsh,load:0x1->NXM_NX_NSH_MDTYPE[],load:0x3->NXM_NX_NSH_NP[],load:0x800004->NXM_NX_NSP[0..23],load:0xff->NXM_NX_NSI[],load:0x1->NXM_NX_NSH_C1[],load:0x67->NXM_NX_NSH_C2[],load:0x3->NXM_NX_NSH_C3[],load:0x4->NXM_NX_NSH_C4[],goto_table:4
+
+table=1, priority=251,encap_eth_type=0x894f actions=goto_table:4
+table=1, priority=250,ip actions=goto_table:4
+table=1, priority=5 actions=drop
+
+table=2, priority=5 actions=goto_table:3
+table=3, priority=5 actions=goto_table:4
+
+table=4, priority=550,nsi=255,nsp=4 actions=load:0xf691d2b9af53->NXM_NX_ENCAP_ETH_SRC[],load:0x725d686bd040->NXM_NX_ENCAP_ETH_DST[],goto_table:10
+table=4, priority=550,nsi=255,nsp=8388612 actions=load:0xee8a4e0ddd11->NXM_NX_ENCAP_ETH_SRC[],load:0x725d686bd040->NXM_NX_ENCAP_ETH_DST[],goto_table:10
+table=4, priority=5 actions=goto_table:10
+
+table=10, priority=650,nsi=255,nsp=4,encap_eth_type=0x0 actions=output:4
+#table=10, priority=650,nsi=255,nsp=4,encap_eth_type=0x894f actions=output:4
+table=10, priority=660,nsi=254,nsp=4 actions=pop_nsh,resubmit(,0)
+table=10, priority=650,nsi=255,nsp=8388612,encap_eth_type=0x0 actions=output:4
+#table=10, priority=650,nsi=255,nsp=8388612,encap_eth_type=0x894f actions=output:4
+table=10, priority=660,nsi=254,nsp=8388612 actions=pop_nsh,resubmit(,0)
+table=10, priority=5 actions=drop
+
