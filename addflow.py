@@ -11,7 +11,7 @@ SUB_DEL = "del-flows"
 ADD_FLOW = [CMD, SUB_ADD, BR]
 QRY_FLOWS = [CMD, SUB_QRY, BR]
 DEL_FLOWS = [CMD, SUB_DEL, BR]
-UPDATE=False
+UPDATE = False
 
 subprocess.Popen(QRY_FLOWS)
 with open('flows.txt') as f:
